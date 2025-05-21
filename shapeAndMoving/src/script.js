@@ -26,6 +26,7 @@ const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
 };
+
 window.addEventListener("resize", () => {
   // update sizes
   sizes.width = window.innerWidth;
@@ -36,6 +37,7 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
 });
+
 /**
  * Camera
  */
@@ -56,19 +58,46 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 
+// Track key states
+const keysPressed = {
+  ArrowUp: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+  ArrowRight: false
+}
+
+// Listen for keydown and keyup
+window.addEventListener('keydown', (event) => {
+  if (keysPressed.hasOwnProperty(event.key)) {
+    keysPressed[event.key] = true
+  }
+})
+
+window.addEventListener('keyup', (event) => {
+  if (keysPressed.hasOwnProperty(event.key)) {
+    keysPressed[event.key] = false
+  }
+})
+
 /**
  * Animate
  */
 
 const tick = () =>
 {
-    // Update controls
-    controls.update()
+  // Handle movement
+  const speed = 0.02;
+  if (keysPressed.ArrowUp) mesh.position.y -= speed;
+  if (keysPressed.ArrowDown) mesh.position.y += speed;
+  if (keysPressed.ArrowLeft) mesh.position.x -= speed;
+  if (keysPressed.ArrowRight) mesh.position.x += speed;
+  // Update controls
+  controls.update();
 
-    // Render
-    renderer.render(scene, camera)
+  // Render
+  renderer.render(scene, camera);
 
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
+  // Call tick again on the next frame
+  window.requestAnimationFrame(tick);
 }
 tick();
